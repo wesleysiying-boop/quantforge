@@ -34,6 +34,7 @@ dependencies = [
 viz = ["plotly>=5.20", "streamlit>=1.32"]
 crypto = ["ccxt>=4.2"]
 live = ["alpaca-py>=0.20", "websockets>=12.0"]
+regime = ["regime-hmm @ git+https://github.com/wesleysiying-boop/regime-hmm.git"]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=4.1",
@@ -78,8 +79,11 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["PLR2004", "S101"]
-"examples/*" = ["E402"]
+"tests/*" = ["PLR2004", "S101", "N802", "N803", "N806"]
+"examples/*" = ["E402", "RUF002"]
+# The regime filter interfaces with the regime-hmm package, which follows
+# the math convention of uppercase X / T / K for matrix shapes.
+"src/quantforge/strategy/regime_filter.py" = ["N802", "N803", "N806"]
 
 [tool.mypy]
 python_version = "3.11"

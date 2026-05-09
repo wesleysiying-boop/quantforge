@@ -54,7 +54,15 @@ class Bar:
     interval: str = "1d"
 
     def __post_init__(self) -> None:
-        if not (self.low <= self.open <= self.high and self.low <= self.close <= self.high):
+        # Tolerance for FP drift in adjusted prices from data vendors.
+        # yfinance's split/dividend adjustment can leave the close 1-2 ULPs
+        # above high or below low; we accept up to 1e-6 relative drift here
+        # and reject anything looser as genuine data corruption.
+        scale = max(abs(self.high), abs(self.low), 1.0)
+        tol = 1e-6 * scale
+        lo = self.low - tol
+        hi = self.high + tol
+        if not (lo <= self.open <= hi and lo <= self.close <= hi and self.low <= self.high + tol):
             raise ValueError(
                 f"OHLC violates bounds for {self.symbol} @ {self.timestamp}: "
                 f"O={self.open} H={self.high} L={self.low} C={self.close}"
