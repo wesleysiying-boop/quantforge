@@ -76,10 +76,14 @@ jobs:
           cache: pip
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-      - name: Install maturin and build the crate
+      - name: Install dev extras + maturin
+        run: python -m pip install -e ".[dev]" maturin
+      - name: Build Rust extension wheel
         run: |
-          python -m pip install -e ".[dev]" maturin
-          cd crates/quantforge-rust && maturin develop --release
+          cd crates/quantforge-rust
+          maturin build --release --interpreter "$(which python)"
+      - name: Install Rust extension wheel
+        run: python -m pip install --no-index --find-links crates/quantforge-rust/target/wheels quantforge-rust
       - name: Verify Rust path is enabled and tests pass
         run: |
           python -c "from quantforge.strategy import indicators; assert indicators.HAS_RUST, 'Rust extension not loaded'; print('HAS_RUST=True')"
