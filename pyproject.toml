@@ -53,6 +53,11 @@ qf = "quantforge.cli:main"
 Homepage = "https://github.com/wesleysiying-boop/quantforge"
 Issues = "https://github.com/wesleysiying-boop/quantforge/issues"
 
+[tool.hatch.metadata]
+# Allow direct git URL references in optional-dependencies (the `regime`
+# extra pulls regime-hmm straight from GitHub).
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/quantforge"]
 
