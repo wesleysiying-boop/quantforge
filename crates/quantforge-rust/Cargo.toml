@@ -1,0 +1,21 @@
+[package]
+name = "quantforge-rust"
+version = "0.1.0"
+edition = "2021"
+description = "Rust hot-path extensions for the quantforge backtester"
+license = "MIT"
+
+[lib]
+name = "quantforge_rust"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["extension-module", "abi3-py311"] }
+numpy = "0.22"
+ndarray = "0.16"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"

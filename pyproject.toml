@@ -93,7 +93,7 @@ disallow_untyped_defs = true
 plugins = []
 
 [[tool.mypy.overrides]]
-module = ["yfinance.*", "ccxt.*", "alpaca.*"]
+module = ["yfinance.*", "ccxt.*", "alpaca.*", "quantforge_rust", "quantforge_rust.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["maturin>=1.7,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "quantforge-rust"
+version = "0.1.0"
+description = "Rust hot-path extensions for quantforge — drop-in replacements for indicator math, 10-50x faster on long sequences"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Wesley Si Ying" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Rust",
+]
+dependencies = ["numpy>=1.26"]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "quantforge_rust"

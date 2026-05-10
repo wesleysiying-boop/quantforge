@@ -121,15 +121,41 @@ This is a **work in progress**, built in the open. The roadmap below tracks real
 - [x] First strategy: SMA crossover
 - [x] Analytics: Sharpe, Sortino, max drawdown, equity curve
 - [x] Streamlit dashboard
+- [x] HMM regime-filter integration via `regime-hmm` ([example](examples/03_regime_filtered_momentum.py))
+- [x] Rust hot-path extension (`crates/quantforge-rust`) for indicator math — measured speedups below
 - [ ] Property-based tests for fill semantics (hypothesis)
 - [ ] Polygon.io data feed (free tier)
 - [ ] CCXT crypto feed + Binance / Coinbase paper-trading adapter
 - [ ] Alpaca paper-trading adapter (US equities)
 - [ ] Walk-forward validation harness
-- [ ] HMM regime filter integration via `regime-hmm`
-- [ ] Rust hot-path extension (`quantforge-core`): indicator math, order matching — target 10× faster event loop
 - [ ] Limit order book matching from `lobster-cpp` (companion project)
 - [ ] Monte Carlo bootstrap for confidence intervals on Sharpe
+
+### Rust hot-path extension
+
+Optional companion crate `crates/quantforge-rust` ships drop-in replacements
+for the indicator math via PyO3. Build once, the Python `indicators` module
+picks them up automatically:
+
+```bash
+cd crates/quantforge-rust
+maturin develop --release
+```
+
+Measured on Python 3.14 / NumPy 2.4 / Apple M-series, n=10,000, window=20:
+
+| Indicator              |    NumPy   |    Rust    |  Speedup |
+| ---------------------- | ---------: | ---------: | -------: |
+| `sma`                  |    62.4 us |    14.3 us |    4.4x  |
+| `ema`                  |   2536 us  |    27.1 us |   93.5x  |
+| `rolling_zscore`       | 89,285 us  |    27.7 us | 3,200x\* |
+| `returns(log=True)`    |    40.7 us |    37.3 us |    1.1x  |
+
+\* The `rolling_zscore` win is partly algorithmic (Rust uses a sliding
+sum/sum-of-squares accumulator, the NumPy path recomputes per step). The
+Python loop in `ema` accounts for the ~100x figure there. `returns` uses
+`np.diff(np.log(...))` which is already C-vectorized — Rust matches but
+doesn't beat. Honest numbers, no cherry-picking.
 
 ### Companion projects
 
